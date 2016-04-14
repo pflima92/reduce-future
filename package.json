@@ -1,0 +1,50 @@
+{
+	"name": "reduce-future",
+	"version": "0.0.1",
+	"main": "./index.js",
+	"description": "Reduce boils down a list of values into a single values. With reduce-future, you will able to reduce one list that need execute async functions, joining the results on success callback.",
+	"author": "Paulo Lima <pflima92@gmail.com> (http://jspare.org)",
+	"directories": 
+	{
+		"example": "example",
+		"test": "test"
+	},
+
+	"scripts": 
+	{
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+
+	"license": "MIT",
+	"repository": 
+	{
+		"type": "git",
+		"url": "https://github.com/pflima92/reduce-future"
+	},
+
+	"bugs": 
+	{
+		"url": "https://github.com/pflima92/reduce-future/issues"
+	},
+
+	"keywords": 
+	[
+		"iterate",
+		"reduce-future",
+		"completable",
+		"future",
+		"iterate callback",
+		"for",
+		"for with callback"
+	],
+	"dependencies": 
+	{
+		"underscore" : "=1.8.3",
+		"node-parallel" : ">=0.1.6"
+	},
+
+	"devDependencies": 
+	{
+		"nodeunit ": ">=0.9.1"
+	}
+}
