@@ -13,9 +13,10 @@ Via npm:
 
 ## Features
 
-	* Reduce list of objects, executing async operations
+	* Reduce array list of objects, executing async operations
 	* Monolithic and Parallel methods
 	* Timeout support.
+	* Immediate finished when error occur.
 	* Unified error handling.
 	* No magic on finished callback, just one done function.
 
@@ -29,34 +30,80 @@ $ cd reduce-future && npm install
 ## Example
 
 ```js
-var _rf = require('../lib/reduce-future');
+var _rf = require('reduce-future');
 
-function person(id, cb) {
+function getPersonService(id, cb, err) {
 
+	// If id generated is GREATER that 500 call err callback
+	if(id > 500){
+
+		err('has id > 500');
+		return;
+	}
+
+	// Execute callback of success
 	cb({
 		id : id,
 		name : 'Person ' + id
 	});
 }
 
+
+//Generate random id's
 var ids = [];
-for (var i = 0; i < 100; i++) {
+for (var i = 0; i < 10; i++) {
 
 	ids.push(Math.floor(Math.random() * 1000) + 1);
 }
 
-//  Use parallel() to parallel processing or reduce() for monolithic process
+// Create CompletableFuture instance
+// When call parallel() indicates that alghoritm is a parallel process
+// When call reduce() indicates that alghoritm is a monolitich process
+_rf.parallel()
+	.addAll(ids) //Add all ids to be processed
+	.next(function(el, context, next, fail) {
+		
+		//Define the each iteration flow
+		
+		//Call external services
+		getPersonService(el, function(resp) {
+			
+			//Set the context populating response
+			context[el] = resp;
+			
+			//Notify CompletableFuture that this call has executed with success
+			next(context);
+		}, function(error){
 
-_rf.parallel().addAll(ids).next(function(el, context, next) {
+			//Indicates that reduce flow should be stopped
+			fail(error);
+		});
+	}).error(function(error) {
+		
+		//Callback of error
 
-	person(el, function(resp) {
-		context[el] = resp;
-		next(resp);
-	})
-}).done(function(context) {
+		// if any getPersonService call fail will show: ==> has id > 500 message.
+		console.error(error); 
+		
+	}).done(function(context) {
+	
+		//Success callback
+		
+		console.info(context);
+		
+		 /* ==> { '30': { id: 30, name: 'Person 30' },
+			  '38': { id: 38, name: 'Person 38' },
+			  '42': { id: 42, name: 'Person 42' },
+			  '43': { id: 43, name: 'Person 43' },
+			  '48': { id: 48, name: 'Person 48' },
+			  '64': { id: 64, name: 'Person 64' },
+			  '70': { id: 70, name: 'Person 70' },
+			  '71': { id: 71, name: 'Person 71' },
+			  '73': { id: 73, name: 'Person 73' },
+			  '85': { id: 85, name: 'Person 85' } }*/
+	});
 
-	console.info(context);
-});
+
 ```
 
 ## API
@@ -85,6 +132,22 @@ Add array and concat at elements of CompletableFuture, can be called any times t
 #### .next(Function)
 
 Add function that will be called on each iteration of CompletableFuture execution
+
+The callback of next future need be signed like:
+
+```js
+
+function(el, context, next, fail){
+
+}
+
+```
+
+
+#### .fail(Function)
+
+Add error callback. Is called when next function call fail() method.
+
 
 #### .done(Function)
 
