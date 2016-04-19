@@ -1,16 +1,16 @@
 var _rf = require('../lib/reduce-future');
 
-function getPersonService(id, cb, err) {
+function getPersonService(id, cb) {
 
-	// If id generated is GREATER that 500 call err callback
-	if(id > 500){
+	// If id generated is GREATER that 5000 call err callback
+	if(id > 5000){
 
-		err('has id > 500');
+		cb('has id > 5000', null);
 		return;
 	}
 
 	// Execute callback of success
-	cb({
+	cb(null, {
 		id : id,
 		name : 'Person ' + id
 	});
@@ -34,24 +34,26 @@ _rf.parallel()
 		//Define the each iteration flow
 		
 		//Call external services
-		getPersonService(el, function(resp) {
+		getPersonService(el, function(err, resp) {
+			
+			if(err){
+				
+				//Indicates that reduce flow should be stopped
+				fail(err);
+			}
 			
 			//Set the context populating response
 			context[el] = resp;
 			
 			//Notify CompletableFuture that this call has executed with success
 			next(context);
-		}, function(error){
-
-			//Indicates that reduce flow should be stopped
-			fail(error);
 		});
 	}).error(function(error) {
 		
 		//Callback of error
 
 		// if any getPersonService call fail will show: ==> has id > 500 message.
-		console.error(error); 
+		console.error('fail: '  + error); 
 		
 	}).done(function(context) {
 	

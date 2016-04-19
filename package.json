@@ -1,6 +1,6 @@
 {
 	"name": "reduce-future",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"main": "./index.js",
 	"description": "Reduce boils down a list of values into a single values. With reduce-future, you will able to reduce one array list that need execute async functions, joining the results on success callback.",
 	"author": "Paulo Lima <pflima92@gmail.com> (http://jspare.org)",
